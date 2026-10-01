@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id       Int      @id @default(autoincrement())
+  nome     String   @db.VarChar(80)
+  email    String   @unique @db.VarChar(120)
+  senha    String
+  criadoEm DateTime @default(now())
+  local    Local?
+}
+
+model Local {
+  id       Int     @id @default(autoincrement())
+  nome     String  @db.VarChar(100)
+  endereco String  @db.VarChar(150)
+  numero   String  @db.VarChar(10)
+  bairro   String? @db.VarChar(80)
+  cidade   String  @db.VarChar(80)
+  foto     String?
+  adminId  Int     @unique
+  admin    Admin   @relation(fields: [adminId], references: [id], onDelete: Cascade)
+  shows    Show[]
+}
+
+model Foto {
+  id    Int    @id @default(autoincrement())
+  dados Bytes
+  tipo  String @db.VarChar(20)
+}
+
+model Genero {
+  id       Int       @id @default(autoincrement())
+  nome     String    @unique @db.VarChar(40)
+  shows    Show[]
+  clientes Cliente[] @relation("PreferenciasCliente")
+}
+
+model Show {
+  id           Int         @id @default(autoincrement())
+  atracao      String      @db.VarChar(100)
+  dataHora     DateTime
+  valor        Decimal     @db.Decimal(10, 2)
+  descricao    String      @db.VarChar(1000)
+  generoId     Int
+  genero       Genero      @relation(fields: [generoId], references: [id])
+  localId      Int
+  local        Local       @relation(fields: [localId], references: [id], onDelete: Cascade)
+  interacoes   Interacao[]
+  criadoEm     DateTime    @default(now())
+  atualizadoEm DateTime    @updatedAt
+
+  @@index([dataHora])
+  @@index([generoId])
+}
+
+model Cliente {
+  id                 Int         @id @default(autoincrement())
+  nome               String      @db.VarChar(80)
+  email              String      @unique @db.VarChar(120)
+  senha              String
+  preferenciasAtivas Boolean     @default(true)
+  preferencias       Genero[]    @relation("PreferenciasCliente")
+  interacoes         Interacao[]
+  criadoEm           DateTime    @default(now())
+}
+
+enum TipoInteracao {
+  FAVORITO
+  COMPRA
+  VISUALIZOU
+}
+
+model Interacao {
+  id           Int           @id @default(autoincrement())
+  tipo         TipoInteracao
+  clienteId    Int
+  cliente      Cliente       @relation(fields: [clienteId], references: [id], onDelete: Cascade)
+  showId       Int
+  show         Show          @relation(fields: [showId], references: [id], onDelete: Cascade)
+  criadoEm     DateTime      @default(now())
+  atualizadoEm DateTime      @updatedAt
+
+  @@unique([clienteId, showId, tipo])
+  @@index([showId])
+}

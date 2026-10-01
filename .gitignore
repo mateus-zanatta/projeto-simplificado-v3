@@ -1,0 +1,16 @@
+# Dependências e builds
+node_modules/
+dist/
+
+# Variáveis de ambiente (senhas, chaves de API): NUNCA versionar
+.env
+.env.*
+!.env.example
+
+
+# Sistema / editores
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.log

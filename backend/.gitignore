@@ -1,0 +1,6 @@
+node_modules/
+dist/
+# Variáveis de ambiente: NUNCA versionar (contém senhas e chaves)
+.env
+.env.*
+!.env.example

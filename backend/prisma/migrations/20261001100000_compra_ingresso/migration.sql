@@ -1,0 +1,1 @@
+ALTER TYPE "TipoInteracao" RENAME VALUE 'VOU' TO 'COMPRA';
